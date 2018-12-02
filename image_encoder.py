@@ -1,5 +1,6 @@
 from PIL import Image
 import random
+import sys
 
 
 '''
@@ -56,16 +57,16 @@ class ImageEncoder:
         self.stored_data = data
 
         pixels_used = len( data ) * NUM_PIXELS_FOR_CHAR
-        max_index = int( ( self.pixel_num - pixels_used ) / pixels_used )
+        max_index = ( ( self.pixel_num - pixels_used ) // pixels_used )
         section_size = max_index + NUM_PIXELS_FOR_CHAR
-        section_num = int(self.pixel_num / section_size)
 
         current_col = 0
         current_row = 0
 
-        for i in range( section_num ):
-            random_index = random.randint( 0, max_index )
-
+        for i in range( len( data ) ):
+            #random_index = random.randint( 0, max_index )
+            random_index = 200
+            
             for j in range( random_index ):
                 self.pixel_matrix[current_col, current_row] = self.zero_pixel( self.pixel_matrix[current_col, current_row] )
                 current_col += 1
@@ -87,7 +88,7 @@ class ImageEncoder:
             data = data[1:]
 
             for new_pixel in new_pixel_set:
-                self.pixel_matrix[pixel_set_coordinates[0][0], pixel_set_coordinates[0][1]] == new_pixel
+                self.pixel_matrix[pixel_set_coordinates[0][0], pixel_set_coordinates[0][1]] = new_pixel
                 pixel_set_coordinates = pixel_set_coordinates[1:]
 
             for j in range( section_size - ( random_index + NUM_PIXELS_FOR_CHAR ) ):
@@ -97,7 +98,7 @@ class ImageEncoder:
                     current_col = 0
                     current_row += 1
 
-        while current_col <= self.image_width and current_row <= self.image_height:
+        while current_col < self.image_width and current_row < self.image_height:
             self.pixel_matrix[current_col, current_row] = self.zero_pixel( self.pixel_matrix[current_col, current_row] )
             current_col += 1
             if current_col >= self.image_width:
@@ -140,7 +141,7 @@ class ImageEncoder:
             zeroed_pixel: the zeroed pixel tuple
         '''
         bin_pixel = self.pixel_to_bin( pixel )
-        zeroed_position = bin_pixel[0][:-1] + "0"
+        zeroed_position = str(bin_pixel[0][:-1]) + "0"
         zeroed_pixel = ( zeroed_position, bin_pixel[1], bin_pixel[2] )
         zeroed_pixel = self.bin_to_pixel( zeroed_pixel )
         return zeroed_pixel
@@ -156,7 +157,7 @@ class ImageEncoder:
         Returns:
             a tuple with the integer values converted to binary
         '''
-        return ( bin( rgb_tuple[0] ), bin( rgb_tuple[1] ), bin( rgb_tuple[2] ) )
+        return ( "{0:08b}".format( rgb_tuple[0] ) , "{0:08b}".format( rgb_tuple[1] ), "{0:08b}".format( rgb_tuple[2] ) )
 
     def store_char( self, char, pixel_list ):
         '''
@@ -173,7 +174,8 @@ class ImageEncoder:
             new_pixel_list: a list containing the three pixel tuples encoded
             with the character in their least significant bits
         '''
-        char_bin = format(ord(char), 'b').zfill(8)
+        char_value = ord( char )
+        char_bin = "{0:08b}".format( char_value )
 
         bin_pixel_list = []
         for pixel in pixel_list:
@@ -189,7 +191,7 @@ class ImageEncoder:
                     new_bin_values.append( bin_val[:-1] + char_bin[0] )
                     char_bin = char_bin[1:]
                 else:
-                    new_bin_values.append( bin_val[:-1] + "1" )
+                    new_bin_values.append( str(bin_val[:-1]) + "1" )
                     first_bin_val = False
             new_pixel_list.append( tuple( new_bin_values ) )
 
@@ -198,33 +200,21 @@ class ImageEncoder:
 
         return new_pixel_list
 
-    def save_image( self, filename, new_format = None ):
+    def save_image( self, filename ):
         '''
         save_image
-            saves the encoded image to a file using the passed filename, and
-            format if one is specified
+            saves the encoded image to a file using the passed filename and
+            png format
         Parameters:
             filename: the new image filename as a string, without the .format 
             on the end
-
-            new_format: a standard image format to use as a string, defaulting
-            to the original format if no format parameter is passed
-                ex. "png", "JPEG", etc.
         Returns:
             True: on success
 
-            False: if the image could not be saved, or if a file with that
-            name already exists (to prevent loss of the original image)
+            False: if the image could not be saved
         '''
-        if new_format is None:
-            new_format = self.image_format
-
-        if filename + "." + new_format == self.image_file:
-            print( "File already exists." )
-            return False
-
         try:
-            self.encoded_image.save( filename, new_format )
+            self.encoded_image.save( filename, "bmp" )
             return True
         except:
             print( "Incorrect filename or format specified." )
@@ -240,27 +230,28 @@ def decode( filename ):
     Returns:
         decoded_text: a string of characters decoded from the image
     '''
-    image_to_decode = Image.open()
+    image_to_decode = Image.open( filename )
     pixel_matrix = image_to_decode.load()
     decoded_text = ""
 
     pixel_set = []
     in_pixel_set = False
-    for i in range( image_to_decode.size[0] ):
-        for j in range( image_to_decode.size[1] ):
-            current_pixel = pixel_matrix[i, j]
+    for i in range( image_to_decode.size[1] ):
+        for j in range( image_to_decode.size[0] ):
+            current_pixel = pixel_matrix[j, i]
             binary_pixel = ImageEncoder.pixel_to_bin( current_pixel )
+
             if in_pixel_set:
-                pixel_set.append(binary_pixel)
-            elif binary_pixel[0][-1] == 0:
+                pixel_set.append( binary_pixel )
+            elif binary_pixel[0][-1] == "0":
                 continue
             else:
                 in_pixel_set = True
-                pixel_set.append(binary_pixel)
+                pixel_set.append( binary_pixel )
 
             if len(pixel_set) > 2:
                 in_pixel_set = False
-                decoded_text += pixels_to_char(pixel_set)
+                decoded_text += pixels_to_char( pixel_set) 
                 pixel_set = []
 
     return decoded_text
@@ -278,12 +269,12 @@ def pixels_to_char( pixel_set ):
 
     bin_string = ""
     for pixel in pixel_set:
-        for i in range(PIXEL_SET_LENGTH):
+        for i in range( PIXEL_SET_LENGTH ):
             bin_string += pixel[i][-1]
 
     bin_string = bin_string[1:]
-    char_value = int(bin_string, 2)
+    char_value = int( bin_string, 2 )
 
-    converted_char = chr(char_value)
+    converted_char = chr( char_value )
     return converted_char
             
