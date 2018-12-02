@@ -14,7 +14,7 @@ def encodeMessage(path, message):
     newImage = im.copy()
     pixels = newImage.load()
     #Needs to encrypt message
-    byteString = ''.join(format(ord(x), 'b') for x in message)
+    byteString = ''.join(format(ord(x), 'b').zfill(8) for x in message)
     messageSize = len(byteString)
     if height < messageSize or width < messageSize:
         print("Message too big to encode")
@@ -27,6 +27,3 @@ def encodeMessage(path, message):
             pixels[i, i] = (red, green, blue)
         newImage.save("example2.jpg", "png")
         return newImage
-
-
-encodeMessage("example.jpg", "Hello!")
