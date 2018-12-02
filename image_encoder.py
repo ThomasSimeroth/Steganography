@@ -56,9 +56,9 @@ class ImageEncoder:
         self.stored_data = data
 
         pixels_used = len( data ) * NUM_PIXELS_FOR_CHAR
-        max_index = ( ( self.pixel_num - pixels_used ) / pixels_used )
+        max_index = int( ( self.pixel_num - pixels_used ) / pixels_used )
         section_size = max_index + NUM_PIXELS_FOR_CHAR
-        section_num = self.pixel_num / section_size
+        section_num = int(self.pixel_num / section_size)
 
         current_col = 0
         current_row = 0
@@ -69,7 +69,7 @@ class ImageEncoder:
             for j in range( random_index ):
                 self.pixel_matrix[current_col, current_row] = self.zero_pixel( self.pixel_matrix[current_col, current_row] )
                 current_col += 1
-                if current_col > self.image_width:
+                if current_col >= self.image_width:
                     current_col = 0
                     current_row += 1
 
@@ -79,7 +79,7 @@ class ImageEncoder:
                 pixel_set.append( self.pixel_matrix[current_col, current_row] )
                 pixel_set_coordinates.append( ( current_col, current_row ) )
                 current_col += 1
-                if current_col > self.image_width:
+                if current_col >= self.image_width:
                     current_col = 0
                     current_row += 1
 
@@ -93,16 +93,16 @@ class ImageEncoder:
             for j in range( section_size - ( random_index + NUM_PIXELS_FOR_CHAR ) ):
                 self.pixel_matrix[current_col, current_row] = self.zero_pixel( self.pixel_matrix[current_col, current_row] )
                 current_col += 1
-                if current_col > self.image_width:
+                if current_col >= self.image_width:
                     current_col = 0
                     current_row += 1
 
         while current_col <= self.image_width and current_row <= self.image_height:
             self.pixel_matrix[current_col, current_row] = self.zero_pixel( self.pixel_matrix[current_col, current_row] )
-                current_col += 1
-                if current_col > self.image_width:
-                    current_col = 0
-                    current_row += 1
+            current_col += 1
+            if current_col >= self.image_width:
+                current_col = 0
+                current_row += 1
 
         self.encoded = True
 
@@ -173,8 +173,7 @@ class ImageEncoder:
             new_pixel_list: a list containing the three pixel tuples encoded
             with the character in their least significant bits
         '''
-        char_value = ord( char )
-        char_bin = bin( char_value )
+        char_bin = format(ord(char), 'b').zfill(8)
 
         bin_pixel_list = []
         for pixel in pixel_list:
@@ -186,7 +185,7 @@ class ImageEncoder:
         for pixel in bin_pixel_list:
             new_bin_values = []
             for bin_val in pixel:
-                if !first_bin_val:
+                if not first_bin_val:
                     new_bin_values.append( bin_val[:-1] + char_bin[0] )
                     char_bin = char_bin[1:]
                 else:
