@@ -64,8 +64,7 @@ class ImageEncoder:
         current_row = 0
 
         for i in range( len( data ) ):
-            #random_index = random.randint( 0, max_index )
-            random_index = 200
+            random_index = random.randint( 0, max_index )
             
             for j in range( random_index ):
                 self.pixel_matrix[current_col, current_row] = self.zero_pixel( self.pixel_matrix[current_col, current_row] )
