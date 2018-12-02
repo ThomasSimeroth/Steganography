@@ -97,6 +97,13 @@ class ImageEncoder:
                     current_col = 0
                     current_row += 1
 
+        while current_col <= self.image_width and current_row <= self.image_height:
+            self.pixel_matrix[current_col, current_row] = self.zero_pixel( self.pixel_matrix[current_col, current_row] )
+                current_col += 1
+                if current_col > self.image_width:
+                    current_col = 0
+                    current_row += 1
+
         self.encoded = True
 
         return True
@@ -109,6 +116,7 @@ class ImageEncoder:
         self.encoded_image = self.original_image.copy()
         self.encoded = False
 
+    @staticmethod
     def bin_to_pixel( bin_pixel ):
         '''
         bin_to_pixel
@@ -137,6 +145,7 @@ class ImageEncoder:
         zeroed_pixel = self.bin_to_pixel( zeroed_pixel )
         return zeroed_pixel
 
+    @staticmethod
     def pixel_to_bin( rgb_tuple ):
         '''
         pixel_to_bin
@@ -144,7 +153,7 @@ class ImageEncoder:
             the binary representations of those values
         Parameters:
             rgb_tuple: a pixel tuple of three integers 0-255
-        Returns
+        Returns:
             a tuple with the integer values converted to binary
         '''
         return ( bin( rgb_tuple[0] ), bin( rgb_tuple[1] ), bin( rgb_tuple[2] ) )
@@ -221,3 +230,61 @@ class ImageEncoder:
         except:
             print( "Incorrect filename or format specified." )
             return False
+
+def decode( filename ):
+    '''
+    decode
+        searches through an image, attempting to decode each pixel's least 
+        significant bit information into characters
+    Parameters:
+        filename: the filename of the image to extract data from
+    Returns:
+        decoded_text: a string of characters decoded from the image
+    '''
+    image_to_decode = Image.open()
+    pixel_matrix = image_to_decode.load()
+    decoded_text = ""
+
+    pixel_set = []
+    in_pixel_set = False
+    for i in range( image_to_decode.size[0] ):
+        for j in range( image_to_decode.size[1] ):
+            current_pixel = pixel_matrix[i, j]
+            binary_pixel = ImageEncoder.pixel_to_bin( current_pixel )
+            if in_pixel_set:
+                pixel_set.append(binary_pixel)
+            elif binary_pixel[0][-1] == 0:
+                continue
+            else:
+                in_pixel_set = True
+                pixel_set.append(binary_pixel)
+
+            if len(pixel_set) > 2:
+                in_pixel_set = False
+                decoded_text += pixels_to_char(pixel_set)
+                pixel_set = []
+
+    return decoded_text
+
+def pixels_to_char( pixel_set ):
+    '''
+    pixels_to_char
+        converts a list of three pixels with binary values into a character
+    Parameters:
+        pixel_set: a list of three pixel tuples with values as binary strings
+    Returns:
+        converted_char: a single character decoded from the pixel set
+    '''
+    PIXEL_SET_LENGTH = 3
+
+    bin_string = ""
+    for pixel in pixel_set:
+        for i in range(PIXEL_SET_LENGTH):
+            bin_string += pixel[i][-1]
+
+    bin_string = bin_string[1:]
+    char_value = int(bin_string, 2)
+
+    converted_char = chr(char_value)
+    return converted_char
+            
