@@ -1,4 +1,5 @@
 from image_aes import *
+from image_encoder import *
 
 encoder = ImageEncoder("Half-Moon.png")
 encoder.encode("The secret message is secret")
