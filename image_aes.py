@@ -1,8 +1,17 @@
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
-from image_encoder import *
 
 def encrypt(filename, key):
+    '''
+    encrypt
+        encrypts a file with a key using CBC AES
+    Parameters:
+        filename: the name of the file to encrypt
+
+        key: the key used for the file's AES encryption
+    Returns:
+        init_vector: the initialization vector used in the file's encryption
+    '''
     AES_BLOCK_SIZE = 16
 
     aes_encryptor = AES.new(key, AES.MODE_CBC)
@@ -22,7 +31,18 @@ def encrypt(filename, key):
 
     return init_vector
 
-def decrypt(filename, key, init_vector): 
+
+def decrypt(filename, key, init_vector):
+    '''
+    decrypt
+        decrypts a file with a key and initialization vector using CBC AES
+    Parameters:
+        filename: the name of the file to decrypt
+
+        key: the key used for the file's AES encryption
+
+        init_vector: the initialization vector used it the file's encryption
+    '''
     AES_BLOCK_SIZE = 16
 
     aes_decryptor = AES.new(key, AES.MODE_CBC, init_vector)
@@ -37,17 +57,41 @@ def decrypt(filename, key, init_vector):
             
 
 def generate_key(key_text):
+    '''
+    generate_key
+        extends or crops a key to 16 characters for AES use
+    Parameters:
+        key_text: the key provided by the user
+    Returns:
+        the 16 character key as a byte string
+    '''
     while len(key_text) < 16:
         key_text += key_text
     return key_text[:16].encode("utf8")
 
 def load_init_vector(iv_file):
+    '''
+    load_init_vector
+        loads an initialization vector from file
+    Parameters:
+        iv_file: the filename of the initialization vector
+    Returns:
+        init_vector: the intialization vector loaded from iv_file
+    '''
     with open(iv_file, 'rb') as outfile:
         init_vector = outfile.read()
 
     return init_vector
 
 def store_init_vector(filename, init_vector):
+    '''
+    store_init_vector
+        saves an initialization vector to a file
+    Parameters:
+        filename: the filename of the original, unencrypted file
+
+        init_vector: the initialization vector to save
+    '''
     iv_file = "iv_" + filename
 
     with open(iv_file, 'wb') as outfile:
