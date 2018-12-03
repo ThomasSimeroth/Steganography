@@ -1,5 +1,6 @@
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
+from image_encoder import *
 
 def encrypt(filename, key):
     AES_BLOCK_SIZE = 16
@@ -41,12 +42,22 @@ def generate_key(key_text):
     return key_text[:16].encode("utf8")
 
 def load_init_vector(filename):
-
+    return False
 
 def store_init_vector(init_vector):
-    
+    return False
 
 def main():
+    encoded_image = ImageEncoder("example.jpg")
+    encoded_image.encode("This is a sentence of test text to try the program's code.")
+    encoded_image.save_image("example3")
+
+    iv = encrypt("example3", generate_key("password"))
+    decrypt("encrypted_example3", generate_key("password"), iv)
+
+    print(decode("new_example3"))
+
+    '''
     user_choice = input("Enter 'E' to encrypt or 'D' to decrypt: ")
     if user_choice == "E" or user_choice == "e":
         file_to_e = input("Enter the filename to encrypt: ")
@@ -62,5 +73,6 @@ def main():
         decrypt(file_to_d, key, init_vector)
     else:
         print("Incorrect input. Exiting...")
+        '''
 
 main()
