@@ -41,38 +41,34 @@ def generate_key(key_text):
         key_text += key_text
     return key_text[:16].encode("utf8")
 
-def load_init_vector(filename):
-    return False
+def load_init_vector(iv_file):
+    with open(iv_file, 'rb') as outfile:
+        init_vector = outfile.read()
 
-def store_init_vector(init_vector):
-    return False
+    return init_vector
+
+def store_init_vector(filename, init_vector):
+    iv_file = "iv_" + filename
+
+    with open(iv_file, 'wb') as outfile:
+        outfile.write(init_vector)
 
 def main():
-    encoded_image = ImageEncoder("example.jpg")
-    encoded_image.encode("This is a sentence of test text to try the program's code.")
-    encoded_image.save_image("example3")
-
-    iv = encrypt("example3", generate_key("password"))
-    decrypt("encrypted_example3", generate_key("password"), iv)
-
-    print(decode("new_example3"))
-
-    '''
     user_choice = input("Enter 'E' to encrypt or 'D' to decrypt: ")
     if user_choice == "E" or user_choice == "e":
         file_to_e = input("Enter the filename to encrypt: ")
         key = ("Enter the password: ")
         key = generate_key(key)
-        store_init_vector(encrypt(file_to_e, key))
+        init_vector = encrypt(file_to_e, key)
+        store_init_vector(file_to_e, init_vector)
     elif user_choice == "D" or user_choice == "d":
         file_to_d = input("Enter the filename to decrypt: ")
         key = ("Enter the password: ")
         key = generate_key(key)
-        init_vector = ("Enter the filename of the initialization vector: ")
+        init_vector = input("Enter the filename of the initialization vector: ")
         init_vector = load_init_vector(init_vector)
         decrypt(file_to_d, key, init_vector)
     else:
         print("Incorrect input. Exiting...")
-        '''
 
 main()
