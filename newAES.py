@@ -29,18 +29,24 @@ def encrypt(the_key, file_name):
 
 def decrypt(the_key, file_name):
     chunksize = 64 * 1024
-    outputFile = file_name[11:]
+    outputFile = "newtesttext" #+ file_name[11:]
     if not outputFile:
         outputfile = os.path.splitext(file_name)[0]
     with open(file_name, 'rb') as infile:
-        file_size = int(infile.read(16))
-        IV = infile.read(16)
-        decryptor = AES.new(the_key, AES.MODE_CBC, IV)
+        IV = ""
+        for i in range(16):
+            IV = IV + chr(random.randint(0, 0x7F))
+        file_size = len(infile.read())
+        infile.seek(0)
+        decryptor = AES.new(the_key, AES.MODE_CBC, IV.encode("utf8"))
         with open(outputFile, 'wb') as outfile:
             while True:
                 chunk = infile.read(chunksize)
                 if len(chunk) == 0:
                     break
+                elif len(chunk) % 16 != 0:
+                    while len(chunk) % 16 != 0:
+                        chunk += " ".encode("utf8")
                 outfile.write(decryptor.decrypt(chunk))
             outfile.truncate(file_size)
 
@@ -51,13 +57,13 @@ def getthe_key(password):
 def Main():
     userinput = "E"#input("Please type E to encrypt the file or D to decrypt the file: ")
     #if userinput == 'E' or userinput == 'e':
-    file_name = "example3"#input("Please type the file name to encrypt: ")
+    file_name = "testtext"#"example3"#input("Please type the file name to encrypt: ")
     password = "password"#input("Please enter a password: ")
     hashedpw = getthe_key(password)
     encrypt(hashedpw, file_name)
     print("The file hase been encrypted.")
     #elif userinput == 'D' or userinput == 'd':
-    #file_name = input("Please type the file name to decrypt: ")
+    file_name = "(encrypted)testtext.enc"#input("Please type the file name to decrypt: ")
     #password = input("Please enter a password: ")
     #hashedpw = getthe_key(password)
     decrypt(hashedpw, file_name)
