@@ -203,7 +203,7 @@ class ImageEncoder:
         '''
         save_image
             saves the encoded image to a file using the passed filename and
-            bmp format
+            png format
         Parameters:
             filename: the new image filename as a string, without the .format 
             on the end
@@ -213,7 +213,7 @@ class ImageEncoder:
             False: if the image could not be saved
         '''
         try:
-            self.encoded_image.save( filename, "bmp" )
+            self.encoded_image.save( filename, "png" )
             return True
         except:
             print( "Incorrect filename or format specified." )

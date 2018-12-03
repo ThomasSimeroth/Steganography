@@ -55,12 +55,12 @@ def store_init_vector(filename, init_vector):
 
 def aes_main(user_choice, filename):
     if user_choice == "E" or user_choice == "e":
-        key = ("Enter the password: ")
+        key = input("Enter the password: ")
         key = generate_key(key)
         init_vector = encrypt(filename, key)
         store_init_vector(filename, init_vector)
     elif user_choice == "D" or user_choice == "d":
-        key = ("Enter the password: ")
+        key = input("Enter the password: ")
         key = generate_key(key)
         iv_file_name = "iv_" + filename[10:]
         init_vector = load_init_vector(iv_file_name)
