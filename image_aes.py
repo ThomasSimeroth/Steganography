@@ -53,22 +53,19 @@ def store_init_vector(filename, init_vector):
     with open(iv_file, 'wb') as outfile:
         outfile.write(init_vector)
 
-def main():
-    user_choice = input("Enter 'E' to encrypt or 'D' to decrypt: ")
+def aes_main(user_choice, filename):
     if user_choice == "E" or user_choice == "e":
-        file_to_e = input("Enter the filename to encrypt: ")
         key = ("Enter the password: ")
         key = generate_key(key)
-        init_vector = encrypt(file_to_e, key)
-        store_init_vector(file_to_e, init_vector)
+        init_vector = encrypt(filename, key)
+        store_init_vector(filename, init_vector)
     elif user_choice == "D" or user_choice == "d":
-        file_to_d = input("Enter the filename to decrypt: ")
         key = ("Enter the password: ")
         key = generate_key(key)
-        init_vector = input("Enter the filename of the initialization vector: ")
-        init_vector = load_init_vector(init_vector)
-        decrypt(file_to_d, key, init_vector)
+        iv_file_name = "iv_" + filename[10:]
+        init_vector = load_init_vector(iv_file_name)
+        decrypt(filename, key, init_vector)
+
+        return "new_" + filename[10:]
     else:
         print("Incorrect input. Exiting...")
-
-main()

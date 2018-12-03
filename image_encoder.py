@@ -203,7 +203,7 @@ class ImageEncoder:
         '''
         save_image
             saves the encoded image to a file using the passed filename and
-            png format
+            bmp format
         Parameters:
             filename: the new image filename as a string, without the .format 
             on the end
@@ -276,4 +276,18 @@ def pixels_to_char( pixel_set ):
 
     converted_char = chr( char_value )
     return converted_char
-            
+
+def encoder_main(user_choice, filename):
+    if user_choice == "E" or user_choice == "e":
+        encoder = ImageEncoder(filename)
+        message = input("Enter the message to hide: ")
+        encoder.encode(message)
+        encoded_file_name = "encoded_" + filename
+        encoder.save_image(encoded_file_name)
+
+        return encoded_file_name
+    elif user_choice == "D" or user_choice == "d":
+        hidden_text = decode(filename)
+        print(hidden_text)
+    else:
+        print("Incorrect input. Exiting...")
