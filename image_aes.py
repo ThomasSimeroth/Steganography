@@ -40,11 +40,27 @@ def generate_key(key_text):
         key_text += key_text
     return key_text[:16].encode("utf8")
 
+def load_init_vector(filename):
+
+
+def store_init_vector(init_vector):
+    
+
 def main():
-    file_to_e = "testtext"
-    file_to_d = "encrypted_testtext"
-    key = "password"
-    init_vector = encrypt(file_to_e, generate_key(key))
-    decrypt(file_to_d, generate_key(key), init_vector)
+    user_choice = input("Enter 'E' to encrypt or 'D' to decrypt: ")
+    if user_choice == "E" or user_choice == "e":
+        file_to_e = input("Enter the filename to encrypt: ")
+        key = ("Enter the password: ")
+        key = generate_key(key)
+        store_init_vector(encrypt(file_to_e, key))
+    elif user_choice == "D" or user_choice == "d":
+        file_to_d = input("Enter the filename to decrypt: ")
+        key = ("Enter the password: ")
+        key = generate_key(key)
+        init_vector = ("Enter the filename of the initialization vector: ")
+        init_vector = load_init_vector(init_vector)
+        decrypt(file_to_d, key, init_vector)
+    else:
+        print("Incorrect input. Exiting...")
 
 main()
