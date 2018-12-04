@@ -59,15 +59,15 @@ def decrypt(filename, key, init_vector):
 def generate_key(key_text):
     '''
     generate_key
-        extends or crops a key to 16 characters for AES use
+        extends or crops a key to 32 characters for AES use
     Parameters:
         key_text: the key provided by the user
     Returns:
-        the 16 character key as a byte string
+        the 32 character key as a byte string
     '''
-    while len(key_text) < 16:
+    while len(key_text) < 32:
         key_text += key_text
-    return key_text[:16].encode("utf8")
+    return key_text[:32].encode("utf8")
 
 def load_init_vector(iv_file):
     '''
