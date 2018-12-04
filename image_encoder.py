@@ -17,7 +17,7 @@ class ImageEncoder:
         try:
             self.original_image = Image.open( self.image_file )
         except:
-            print("File could not be opened.")
+            print( "File could not be opened." )
             sys.exit(1)
 
         self.image_format = self.original_image.format
@@ -50,7 +50,7 @@ class ImageEncoder:
             print( "Image has already been encoded with data." )
             return False
 
-        if len(data) * NUM_PIXELS_FOR_CHAR > self.pixel_num:
+        if len( data ) * NUM_PIXELS_FOR_CHAR > self.pixel_num:
             print( "Size of input is too large for image to store." )
             return False
 
@@ -277,17 +277,17 @@ def pixels_to_char( pixel_set ):
     converted_char = chr( char_value )
     return converted_char
 
-def encoder_main(user_choice, filename):
+def encoder_main( user_choice, filename ):
     if user_choice == "E" or user_choice == "e":
-        encoder = ImageEncoder(filename)
-        message = input("Enter the message to hide: ")
-        encoder.encode(message)
+        encoder = ImageEncoder( filename )
+        message = input( "Enter the message to hide: " )
+        encoder.encode( message )
         encoded_file_name = "encoded_" + filename
-        encoder.save_image(encoded_file_name)
+        encoder.save_image( encoded_file_name )
 
         return encoded_file_name
     elif user_choice == "D" or user_choice == "d":
-        hidden_text = decode(filename)
-        print(hidden_text)
+        hidden_text = decode( filename )
+        print( hidden_text )
     else:
-        print("Incorrect input. Exiting...")
+        print( "Incorrect input. Exiting..." )
