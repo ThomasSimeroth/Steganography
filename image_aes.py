@@ -1,4 +1,5 @@
 from Crypto.Cipher import AES
+from Crypto.Hash import SHA256
 from Crypto.Util.Padding import pad, unpad
 
 def encrypt(filename, key):
@@ -59,15 +60,14 @@ def decrypt(filename, key, init_vector):
 def generate_key(key_text):
     '''
     generate_key
-        extends or crops a key to 32 characters for AES use
+        returns the SHA256 hash of a key string
     Parameters:
         key_text: the key provided by the user
     Returns:
-        the 32 character key as a byte string
+        the 32 byte SHA256 digest of key_text
     '''
-    while len(key_text) < 32:
-        key_text += key_text
-    return key_text[:32].encode("utf8")
+    key_hash = SHA256.new(key_text.encode("utf8"))
+    return key_hash.digest()
 
 def load_init_vector(iv_file):
     '''
